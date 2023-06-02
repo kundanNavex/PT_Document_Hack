@@ -12,7 +12,6 @@ const params = new Proxy(new URLSearchParams(window.location.search), {
 var documentid = params.docid;
 $(document).ready(function () {
 	savePageData(documentid, '1')
-	//viewDocument("D:\\PT_DocumentView\\PT_Document_Hack\\UserFiles\\Healthcare_Benefits_(85_2).doc", "False", undefined, undefined);
 	viewDocument("D:\\PT_DocumentView\\PT_Document_Hack\\UserFiles\\Drug_Free_Workplace_(269_1).doc", "False", undefined, undefined);
 	//viewDocument("D:\\PT_DocumentView\\PT_Document_Hack\\UserFiles\\Healthcare_Benefits_(85_2).pdf", "False", undefined, undefined);
 });
