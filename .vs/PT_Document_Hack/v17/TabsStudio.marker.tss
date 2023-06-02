@@ -1,11 +1,2 @@
 <?xml version="1.0"?>
-<ArrayOfTabHighlightState xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-  <TabHighlightState>
-    <extensions>
-      <string>PT_Document_Hack\Default.aspx</string>
-      <string>PT_Document_Hack\Default.js</string>
-      <string>PT_Document_Hack\Default.aspx.cs</string>
-    </extensions>
-    <highlightIndex>1</highlightIndex>
-  </TabHighlightState>
-</ArrayOfTabHighlightState>
+<ArrayOfTabHighlightState xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" />
