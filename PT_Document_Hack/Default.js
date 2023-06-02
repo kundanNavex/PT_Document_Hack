@@ -5,14 +5,16 @@ $(window).load(function () {
 	
 });
 
-$(document).ready(function () {
-	//viewDocument("D:\\PT_DocumentView\\PT_Document_Hack\\UserFiles\\Healthcare_Benefits_(85_2).doc", "False", undefined, undefined);
-	viewDocument("D:\\PT_DocumentView\\PT_Document_Hack\\UserFiles\\Drug_Free_Workplace_(269_1).doc", "False", undefined, undefined);
-	//viewDocument("D:\\PT_DocumentView\\PT_Document_Hack\\UserFiles\\Healthcare_Benefits_(85_2).pdf", "False", undefined, undefined);
-});
 // Initialize Quesrystrig
 const params = new Proxy(new URLSearchParams(window.location.search), {
 	get: (searchParams, prop) => searchParams.get(prop),
+});
+var documentid = params.docid;
+$(document).ready(function () {
+	savePageData(documentid, '1')
+	//viewDocument("D:\\PT_DocumentView\\PT_Document_Hack\\UserFiles\\Healthcare_Benefits_(85_2).doc", "False", undefined, undefined);
+	viewDocument("D:\\PT_DocumentView\\PT_Document_Hack\\UserFiles\\Drug_Free_Workplace_(269_1).doc", "False", undefined, undefined);
+	//viewDocument("D:\\PT_DocumentView\\PT_Document_Hack\\UserFiles\\Healthcare_Benefits_(85_2).pdf", "False", undefined, undefined);
 });
 
 
@@ -70,6 +72,65 @@ function getDocumentData(filePath) {
     });
 }
 
+function savePageData(docid,pageNo) {
+	//filePath = filePath.replace(/\\/g, "\\\\");
+	debugger;
+	$.ajax({
+		type: "POST",
+		url: "Default.aspx/SavePageData",
+		data: '{ docid: "' + docid + '",pageNo: "' + pageNo + '" }',
+		contentType: "application/json; charset=utf-8",
+		dataType: "json",
+		success: function (data) {
+			debugger;
+			// If there is error
+			if (data.d[0].substr(0, 5) == error) {
+				
+			}
+			else {
+
+				// In case call is successful, pass data to success method
+				//getDocumentData_Success(data.d);
+			}
+		},
+		failure: function (data) {
+			alert('error');
+		}
+	});
+}
+
+function GetPageViewdData(docid) {
+	//filePath = filePath.replace(/\\/g, "\\\\");
+	debugger;
+	$.ajax({
+		type: "POST",
+		url: "Default.aspx/GetPageViewdData",
+		data: '{ docid: "' + docid + '" }',
+		contentType: "application/json; charset=utf-8",
+		dataType: "json",
+		success: function (data) {
+			debugger;
+			// If there is error
+			if (data.d[0].substr(0, 5) == error) {
+
+			}
+			else {
+				var StringPagesStore = data.d;
+				var arrPagesStore = String(StringPagesStore).split(',');
+				arrPagesStore.forEach(function (item, index) {
+					//console.log(item, index);
+					$("#PageLI" + item).addClass("active");
+				});
+				// In case call is successful, pass data to success method
+				//getDocumentData_Success(data.d);
+			}
+		},
+		failure: function (data) {
+			alert('error');
+		}
+	});
+}
+
 function getDocumentData_Success(result) {
     var totalPages = result[1];
     var imageFolder = result[2];
@@ -88,15 +149,9 @@ function getDocumentData_Success(result) {
 			.after('<li class="DocumentViewerPaginationLI"><a id="' + PageLI +'" onclick="' + currentPage + '" href="#">' + iPage + '</a></li>');
 
 	}
-	var docid = params.docid;
-	var StringPagesStore = localStorage.getItem('arrPagesLs') || [];
-	var arrPagesStore = String(StringPagesStore).split(',');
-	arrPagesStore.forEach(function (item, index) {
-		//console.log(item, index);
-		$("#PageLI" + item).addClass("active");
-	});
 	$("#PageLI1").addClass("active");
 	arrPages.push(1);
+	GetPageViewdData(documentid);
 }
 
 function resetDocumentViewerModalData() {
@@ -132,19 +187,10 @@ function setCurrentPage(currentPage, iPage, PageLI) {
 var arrPages = [];
 
 function AddPageClick(iPage) {
-	debugger;
-	
-	var StringPagesStore1 = localStorage.getItem('arrPagesLs') || [];
-	var arrPagesStore1 = String(StringPagesStore1).split(',');
-	if (arrPagesStore1.length >0) {
-		arrPages = arrPagesStore1
-	}
 	if (!arrPages.includes(iPage)) {
 		arrPages.push(String(iPage));
 	}
-	localStorage.setItem('arrPagesLs', arrPages);
-	//debugger;
-	//alert(jsonData)
+	savePageData(documentid,iPage);
 }
 
 //$(".select-document").on('click', function (event) {
