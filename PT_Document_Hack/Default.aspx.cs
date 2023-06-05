@@ -35,7 +35,7 @@ namespace DocumentComparison
 		protected void Page_Load(object sender, EventArgs e)
         {
             Common.SetLicense();
-
+			Console.WriteLine("---");
             if (!IsPostBack)
             {
                 this.CurrentFolder = Common.DataDir;
