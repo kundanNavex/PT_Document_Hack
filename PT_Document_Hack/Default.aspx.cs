@@ -84,12 +84,12 @@ namespace DocumentComparison
 		}
 
 		[WebMethod]
-		public static string SavePageData(string docid, string pageNo)
+		public static string SavePageData(string UserID,string docid, string pageNo)
 		{
 			string result = pageNo;
 			if (docid != "null" && (GEtPageDataExistsInDB(docid, pageNo) == 0))
 			{
-				SavePageDatainDB(docid, pageNo);
+				SavePageDatainDB(UserID,docid, pageNo);
 
 			}
 			return result;
@@ -102,12 +102,12 @@ namespace DocumentComparison
 			return GetAllPageViewd(docid).ToArray();
 		}
 
-		public static string SavePageDatainDB(string docid, string pageNo)
+		public static string SavePageDatainDB(string UserID, string docid, string pageNo)
 		{
 			string returnMess = string.Empty;
 			conn = new SqlConnection(connstring);
 			conn.Open();
-			comm = new SqlCommand("insert into DocumentPageMapping values(" + docid + ",'" + pageNo + "')", conn);
+			comm = new SqlCommand("insert into DocumentPageMapping values(" + docid + ",'" + pageNo + "','" + UserID + "')", conn);
 			try
 			{
 				comm.ExecuteNonQuery();

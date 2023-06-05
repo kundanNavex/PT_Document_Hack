@@ -10,9 +10,10 @@ const params = new Proxy(new URLSearchParams(window.location.search), {
 	get: (searchParams, prop) => searchParams.get(prop),
 });
 var documentid = params.docid;
+var UserID = params.UserID;
 
 $(document).ready(function () {
-	savePageData(documentid, '1')
+	savePageData(UserID,documentid, '1')
 	readTextFile("/data/pageStore.json", function (text) {
 		var json = JSON.parse(text);
 		//console.log(data);
@@ -94,13 +95,13 @@ function getDocumentData(filePath) {
 	});
 }
 
-function savePageData(docid, pageNo) {
+function savePageData(UserID,docid, pageNo) {
 	//filePath = filePath.replace(/\\/g, "\\\\");
 	debugger;
 	$.ajax({
 		type: "POST",
 		url: "Default.aspx/SavePageData",
-		data: '{ docid: "' + docid + '",pageNo: "' + pageNo + '" }',
+		data: '{ UserID: "' + UserID + '",docid: "' + docid + '",pageNo: "' + pageNo + '" }',
 		contentType: "application/json; charset=utf-8",
 		dataType: "json",
 		success: function (data) {
