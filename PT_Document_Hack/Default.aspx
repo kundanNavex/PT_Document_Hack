@@ -31,6 +31,7 @@
 			background-color: #ddd;
 		}
 	</style>
+	<script src="https://cdn.canvasjs.com/canvasjs.min.js"></script>
 	<script>
 		var sessionsObj = [];
 		var noOfSessions = 0;
@@ -108,9 +109,32 @@
 				span1.text(displayTime);
 			}, 1000);
 		}
-		window.onload = function () {			
+		window.onload = function () {
+			getlocalStoragetime();
 			getlocalStoragetime1();
-            getlocalStoragetime();
+
+            var datapoints = [
+                { y: 79.45, label: "Google" },
+                { y: 7.31, label: "Bing" },
+                { y: 7.06, label: "Baidu" },
+                { y: 4.91, label: "Yahoo" },
+                { y: 1.26, label: "Others" }
+            ];
+
+            var chart = new CanvasJS.Chart("chartContainer", {
+                animationEnabled: true,
+                title: {
+                    text: "Document Sessions"
+                },
+                data: [{
+                    type: "pie",
+                    startAngle: 240,
+                    yValueFormatString: "##0.00\"%\"",
+                    indexLabel: "{label} {y}",
+                    dataPoints: datapoints
+                }]
+            });
+            chart.render();
 		};
 
 
@@ -214,6 +238,9 @@
 										</a>
 									</li>
 								</ul>
+							</div>
+							<div class="row col-lg-12">
+								<div id="chartContainer" style="height: 370px; width: 100%;"></div>
 							</div>
 						</div>
 

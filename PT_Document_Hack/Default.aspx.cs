@@ -3,6 +3,7 @@ using Aspose.Words.Saving;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Data.SqlClient;
 using System.IO;
 using System.Linq;
 using System.Web;
@@ -10,6 +11,7 @@ using System.Web.Hosting;
 using System.Web.Services;
 using System.Web.UI;
 using System.Web.UI.WebControls;
+using System.Xml.Linq;
 
 namespace DocumentComparison
 {
@@ -26,16 +28,20 @@ namespace DocumentComparison
                 ViewState["CurrentFolder"] = value;
             }
         }
-
-        protected void Page_Load(object sender, EventArgs e)
+		static SqlConnection conn;
+		static SqlCommand comm;
+		static SqlDataReader dreader;
+		static string connstring = "server=localhost;database=PT_dm1_Data;Integrated Security=True;";
+		protected void Page_Load(object sender, EventArgs e)
         {
             Common.SetLicense();
 			Console.WriteLine("---");
             if (!IsPostBack)
             {
-				Console.WriteLine("===");
-				this.CurrentFolder = Common.DataDir;
-            }
+                this.CurrentFolder = Common.DataDir;
+				//GetAllPageViewd("269");
+
+			}
             
             // Handle file upload, ONLY in case of post back
          //   if (IsPostBack)
@@ -78,12 +84,92 @@ namespace DocumentComparison
 		}
 
 		[WebMethod]
-		public static string SavePageData(string pageNo)
+		public static string SavePageData(string docid, string pageNo)
 		{
 			string result = pageNo;
+			if (docid != "null" && (GEtPageDataExistsInDB(docid, pageNo) == 0))
+			{
+				SavePageDatainDB(docid, pageNo);
 
-
+			}
 			return result;
+		}
+
+		[WebMethod]
+		public static Array GetPageViewdData(string docid)
+		{
+
+			return GetAllPageViewd(docid).ToArray();
+		}
+
+		public static string SavePageDatainDB(string docid, string pageNo)
+		{
+			string returnMess = string.Empty;
+			conn = new SqlConnection(connstring);
+			conn.Open();
+			comm = new SqlCommand("insert into DocumentPageMapping values(" + docid + ",'" + pageNo + "')", conn);
+			try
+			{
+				comm.ExecuteNonQuery();
+				 returnMess= "Saved...";
+			}
+			catch (Exception)
+			{
+				returnMess = "Not Saved";
+			}
+			finally
+			{
+				conn.Close();
+			}
+			return returnMess;
+		}
+		public static int GEtPageDataExistsInDB(string docid, string pageNo)
+		{
+			string returnMess = string.Empty;
+			int RecordCount = 0;
+			conn = new SqlConnection(connstring);
+			conn.Open();
+			comm = new SqlCommand("select Count(*) from DocumentPageMapping where docid = " + docid + " and PageViewd=" + pageNo + " ", conn);
+			try
+			{
+				 RecordCount = Convert.ToInt32(comm.ExecuteScalar()); 
+			}
+			catch (Exception)
+			{
+				return RecordCount;
+			}
+			finally
+			{
+				conn.Close();
+			}
+			return RecordCount;
+		}
+
+		public static List<string> GetAllPageViewd(string docid)
+		{
+			List<string> li = new List<string>();
+			string returnMess = string.Empty;
+			int RecordCount = 0;
+			conn = new SqlConnection(connstring);
+			conn.Open();
+			comm = new SqlCommand("select * from DocumentPageMapping where docid = " + docid + " ", conn);
+			try
+			{
+				SqlDataReader sdr = comm.ExecuteReader();
+				while (sdr.Read())
+				{
+					li.Add(sdr["PageViewd"].ToString());
+				}
+			}
+			catch (Exception)
+			{
+				return li;
+			}
+			finally
+			{
+				conn.Close();
+			}
+			return li;
 		}
 
 		public static string MapPathReverse(string path)
