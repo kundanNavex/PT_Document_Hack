@@ -12,28 +12,31 @@
 			display: inline-block;
 		}
 
-			.pagination a {
-				color: black;
-				float: left;
-				padding: 8px 16px;
-				text-decoration: none;
-				transition: background-color .3s;
-				border: 1px solid #ddd;
-			}
+		.pagination a {
+			color: black;
+			float: left;
+			padding: 8px 16px;
+			text-decoration: none;
+			transition: background-color .3s;
+			border: 1px solid #ddd;
+		}
 
-				.pagination a.active {
-					background-color: #4CAF50;
-					color: white;
-					border: 1px solid #4CAF50;
-				}
+		.pagination a.active {
+			background-color: #4CAF50;
+			color: white;
+			border: 1px solid #4CAF50;
+		}
 
-				.pagination a:hover:not(.active) {
-					background-color: #ddd;
-				}
+		.pagination a:hover:not(.active) {
+			background-color: #ddd;
+		}
 	</style>
 	<script>
+		var sessionsObj = [];
+		var noOfSessions = 0;
 		function getlocalStoragetime() {
-			var time = localStorage.getItem('timer') || "00:00:00",
+			noOfSessions++;
+			var time = localStorage.getItem('timer1') || "00:00:00",
 				parts = time.split(':'),
 				hours = +parts[0],
 				minutes = +parts[1],
@@ -44,7 +47,7 @@
 				return (num < 10) ? ("0" + num) : num;
 			}
 
-			var timer = setInterval(function () {
+			/*var timer = setInterval(function () {
 				seconds++;
 				if (seconds > 59) {
 					minutes++;
@@ -63,7 +66,14 @@
 				var displayTime = correctNum(hours) + ":" + correctNum(minutes) + ":" + correctNum(seconds);
 				localStorage.setItem('timer', displayTime);
 				span.text(displayTime);
-			}, 1000);
+			}, 1000);*/
+            var displayTime = correctNum(hours) + ":" + correctNum(minutes) + ":" + correctNum(seconds);
+			sessionsObj.push({ session: noOfSessions, time: displayTime });
+            localStorage.setItem('timer', { session: noOfSessions, time: displayTime });
+
+
+            console.log(sessionsObj);
+            span.text(displayTime);
 		}
 		function getlocalStoragetime1() {
 			var time1 = "00:00:00",
@@ -98,15 +108,14 @@
 				span1.text(displayTime);
 			}, 1000);
 		}
-		window.onload = function () {
-			getlocalStoragetime();
+		window.onload = function () {			
 			getlocalStoragetime1();
-
+            getlocalStoragetime();
 		};
 
 
 
-	</script>
+    </script>
 	<%--<h1>My Documents</h1>--%>
 	<%--<p class="lead margin-top-10">Manage, view and compare Microsoft Word documents.</p>--%>
 

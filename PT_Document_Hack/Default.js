@@ -7,7 +7,7 @@ $(window).load(function () {
 
 $(document).ready(function () {
 	//viewDocument("D:\\PT_DocumentView\\PT_Document_Hack\\UserFiles\\Healthcare_Benefits_(85_2).doc", "False", undefined, undefined);
-	viewDocument("D:\\PT_DocumentView\\PT_Document_Hack\\UserFiles\\Drug_Free_Workplace_(269_1).doc", "False", undefined, undefined);
+    viewDocument("D:\\Hackerton\\PT_Document_Hack\\PT_Document_Hack\\UserFiles\\Drug_Free_Workplace_(269_1).doc", "False", undefined, undefined);
 	//viewDocument("D:\\PT_DocumentView\\PT_Document_Hack\\UserFiles\\Healthcare_Benefits_(85_2).pdf", "False", undefined, undefined);
 });
 // Initialize Quesrystrig

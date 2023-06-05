@@ -30,10 +30,11 @@ namespace DocumentComparison
         protected void Page_Load(object sender, EventArgs e)
         {
             Common.SetLicense();
-
+			Console.WriteLine("---");
             if (!IsPostBack)
             {
-                this.CurrentFolder = Common.DataDir;
+				Console.WriteLine("===");
+				this.CurrentFolder = Common.DataDir;
             }
             
             // Handle file upload, ONLY in case of post back
