@@ -99,6 +99,53 @@
 				span1.text(displayTime);
 			}, 1000);
 		}
+		function getDocumentSessions(docid) {
+            var dataPoints = [];
+            var datapoints = [
+                { y: 79.45, label: "Google" },
+                { y: 7.31, label: "Bing" },
+                { y: 7.06, label: "Baidu" },
+                { y: 4.91, label: "Yahoo" },
+                { y: 1.26, label: "Others" }
+            ];
+            $.ajax({
+                type: "POST",
+                url: "Default.aspx/GetDocumentSessions",
+                data: '{ docId: "' + docid + '"}',
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (data) {
+                    data.d.forEach(time => {
+                        let a = time.sessiontime.split(":");
+                        let seconds = +a[0] * 60 * 60 + +a[1] * 60 + +a[2];
+						let time1 = new Date(seconds * 1000).toISOString().substr(11, 8);
+						dataPoints.push({
+                            y: seconds,
+                            label: "Session "+time.sessionid
+                        });
+                    });
+                    var chart = new CanvasJS.Chart("chartContainer", {
+                        animationEnabled: true,
+                        title: {
+                            text: "Document Sessions"
+                        },
+                        data: [{
+                            type: "pie",
+                            startAngle: 240,
+                            yValueFormatString: "##0.00\"%\"",
+                            indexLabel: "{label} {y}",
+                            dataPoints: dataPoints
+                        }]
+                    });
+                    chart.render();
+                },
+                failure: function (data) {
+                    alert('error');
+                }
+            });
+            
+           
+        }
 		window.onload = function () {
             const params = new Proxy(new URLSearchParams(window.location.search), {
                 get: (searchParams, prop) => searchParams.get(prop),
@@ -107,28 +154,29 @@
             getlocalStoragetime(params.docid);
 			getlocalStoragetime1();
 
-            var datapoints = [
-                { y: 79.45, label: "Google" },
-                { y: 7.31, label: "Bing" },
-                { y: 7.06, label: "Baidu" },
-                { y: 4.91, label: "Yahoo" },
-                { y: 1.26, label: "Others" }
-            ];
+            getDocumentSessions(params.docid);
+            //var datapoints = [
+            //    { y: 79.45, label: "Google" },
+            //    { y: 7.31, label: "Bing" },
+            //    { y: 7.06, label: "Baidu" },
+            //    { y: 4.91, label: "Yahoo" },
+            //    { y: 1.26, label: "Others" }
+            //];
 
-            var chart = new CanvasJS.Chart("chartContainer", {
-                animationEnabled: true,
-                title: {
-                    text: "Document Sessions"
-                },
-                data: [{
-                    type: "pie",
-                    startAngle: 240,
-                    yValueFormatString: "##0.00\"%\"",
-                    indexLabel: "{label} {y}",
-                    dataPoints: datapoints
-                }]
-            });
-            chart.render();
+            //var chart = new CanvasJS.Chart("chartContainer", {
+            //    animationEnabled: true,
+            //    title: {
+            //        text: "Document Sessions"
+            //    },
+            //    data: [{
+            //        type: "pie",
+            //        startAngle: 240,
+            //        yValueFormatString: "##0.00\"%\"",
+            //        indexLabel: "{label} {y}",
+            //        dataPoints: datapoints
+            //    }]
+            //});
+            //chart.render();
 		};
 
 
