@@ -150,7 +150,7 @@ namespace DocumentComparison
 			string returnMess = string.Empty;
 			conn = new SqlConnection(connstring);
 			conn.Open();
-			comm = new SqlCommand("insert into DocumentPageMapping values(" + docid + ",'" + pageNo + "','" + UserID + "')", conn);
+			comm = new SqlCommand("insert into DocumentPageMapping (DocId,PageViewd,UserID) values(" + docid + ",'" + pageNo + "','" + UserID + "')", conn);
 			try
 			{
 				comm.ExecuteNonQuery();

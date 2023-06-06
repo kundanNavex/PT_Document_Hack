@@ -206,7 +206,7 @@ function AddPageClick(iPage) {
 	if (!arrPages.includes(iPage)) {
 		arrPages.push(String(iPage));
 	}
-	savePageData(documentid, iPage);
+	savePageData(UserID,documentid, iPage);
 }
 
 //$(".select-document").on('click', function (event) {
