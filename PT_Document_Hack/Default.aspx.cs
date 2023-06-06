@@ -112,7 +112,39 @@ namespace DocumentComparison
 			return GetSessionData(docId, sessionTime).ToArray();
 		}
 
-		private static List<DocumentSession> GetSessionData(string docId, string sessionTime) {
+        [WebMethod]
+        public static Array GetDocumentSessions(string docId)
+        {
+            List<DocumentSession> documentSeesions = new List<DocumentSession>();
+            conn = new SqlConnection(connstring);
+            conn.Open();
+			try
+			{
+                comm = new SqlCommand("select * from DocumentPageSession where docid = " + docId, conn);
+                using (SqlDataReader reader = comm.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        string docid = Convert.ToString(reader["docid"]);
+                        string sessionid = Convert.ToString(reader["sessionid"]);
+                        string sessiontime = Convert.ToString(reader["sessiontime"]);
+                        documentSeesions.Add(new DocumentSession() { docid = docid, sessionid = sessionid, sessiontime = sessiontime });
+                    }
+                }
+            }
+			catch (Exception)
+			{
+
+			}
+            finally
+            {
+                conn.Close();
+            }
+            return documentSeesions.ToArray();
+        }
+
+
+        private static List<DocumentSession> GetSessionData(string docId, string sessionTime) {
 			List<DocumentSession> documentSeesions = new List<DocumentSession>();
 			conn = new SqlConnection(connstring);
 			conn.Open();
@@ -150,7 +182,7 @@ namespace DocumentComparison
 			string returnMess = string.Empty;
 			conn = new SqlConnection(connstring);
 			conn.Open();
-			comm = new SqlCommand("insert into DocumentPageMapping values(" + docid + ",'" + pageNo + "','" + UserID + "')", conn);
+			comm = new SqlCommand("insert into DocumentPageMapping (DocId,PageViewd,UserID) values(" + docid + ",'" + pageNo + "','" + UserID + "')", conn);
 			try
 			{
 				comm.ExecuteNonQuery();
