@@ -2,7 +2,6 @@
 var error = "error";
 
 $(window).load(function () {
-
 });
 
 // Initialize Quesrystrig
@@ -18,7 +17,6 @@ $(document).ready(function () {
 		//console.log(data);
 		for (let i = 0; i < json.length; i++) {
 			let obj = json[i];
-			debugger;
 			if (documentid == obj.docid) {
 				viewDocument(obj.docpath, "False", undefined, undefined);
 				break;
@@ -96,7 +94,6 @@ function getDocumentData(filePath) {
 
 function savePageData(docid, pageNo) {
 	//filePath = filePath.replace(/\\/g, "\\\\");
-	debugger;
 	$.ajax({
 		type: "POST",
 		url: "Default.aspx/SavePageData",
@@ -104,7 +101,6 @@ function savePageData(docid, pageNo) {
 		contentType: "application/json; charset=utf-8",
 		dataType: "json",
 		success: function (data) {
-			debugger;
 			// If there is error
 			if (data.d[0].substr(0, 5) == error) {
 
@@ -123,7 +119,6 @@ function savePageData(docid, pageNo) {
 
 function GetPageViewdData(docid) {
 	//filePath = filePath.replace(/\\/g, "\\\\");
-	debugger;
 	$.ajax({
 		type: "POST",
 		url: "Default.aspx/GetPageViewdData",
@@ -131,7 +126,6 @@ function GetPageViewdData(docid) {
 		contentType: "application/json; charset=utf-8",
 		dataType: "json",
 		success: function (data) {
-			debugger;
 			// If there is error
 			if (data.d[0].substr(0, 5) == error) {
 
@@ -197,7 +191,6 @@ function resetDocumentViewerModalData() {
 }
 
 function setCurrentPage(currentPage, iPage, PageLI) {
-	debugger;
 	$("#CurrentDocumentPage").attr("src", currentPage);
 	$("#" + PageLI.id).addClass("active");
 	//alert(PageLI.id);

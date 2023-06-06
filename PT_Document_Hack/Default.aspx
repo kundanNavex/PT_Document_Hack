@@ -33,10 +33,7 @@
 	</style>
 	<script src="https://cdn.canvasjs.com/canvasjs.min.js"></script>
 	<script>
-		var sessionsObj = [];
-		var noOfSessions = 0;
-		function getlocalStoragetime() {
-			noOfSessions++;
+		function getlocalStoragetime(docid) {
 			var time = localStorage.getItem('timer1') || "00:00:00",
 				parts = time.split(':'),
 				hours = +parts[0],
@@ -47,34 +44,27 @@
 			function correctNum(num) {
 				return (num < 10) ? ("0" + num) : num;
 			}
-
-			/*var timer = setInterval(function () {
-				seconds++;
-				if (seconds > 59) {
-					minutes++;
-					seconds = 0;
-
-					if (minutes > 59) {
-						hours++;
-						seconds = 0;
-						minutes = 0;
-
-						if (hours >= 24) {
-							alert("You're logged-in for 24 hours.");
-						}
-					}
-				}
-				var displayTime = correctNum(hours) + ":" + correctNum(minutes) + ":" + correctNum(seconds);
-				localStorage.setItem('timer', displayTime);
-				span.text(displayTime);
-			}, 1000);*/
-            var displayTime = correctNum(hours) + ":" + correctNum(minutes) + ":" + correctNum(seconds);
-			sessionsObj.push({ session: noOfSessions, time: displayTime });
-            localStorage.setItem('timer', { session: noOfSessions, time: displayTime });
-
-
-            console.log(sessionsObj);
-            span.text(displayTime);
+			var displayTime = correctNum(hours) + ":" + correctNum(minutes) + ":" + correctNum(seconds);
+            docid != null && $.ajax({
+                type: "POST",
+                url: "Default.aspx/GetDocumentSessionData",
+                data: '{ docId: "' + docid + '", sessionTime: "' + displayTime +'" }',
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (data) {
+                    let sumSeconds = 0;
+                    data.d.forEach(time => {
+                        let a = time.sessiontime.split(":");
+                        let seconds = +a[0] * 60 * 60 + +a[1] * 60 + +a[2];
+                        sumSeconds += seconds;
+					});
+					let time = new Date(sumSeconds * 1000).toISOString().substr(11, 8);
+                    span.text(time);					
+                },
+                failure: function (data) {
+                    alert('error');
+                }
+            });
 		}
 		function getlocalStoragetime1() {
 			var time1 = "00:00:00",
@@ -88,7 +78,7 @@
 				return (num < 10) ? ("0" + num) : num;
 			}
 
-			var timer1 = setInterval(function () {
+			setInterval(function () {
 				seconds++;
 				if (seconds > 59) {
 					minutes++;
@@ -110,7 +100,11 @@
 			}, 1000);
 		}
 		window.onload = function () {
-			getlocalStoragetime();
+            const params = new Proxy(new URLSearchParams(window.location.search), {
+                get: (searchParams, prop) => searchParams.get(prop),
+            });
+
+            getlocalStoragetime(params.docid);
 			getlocalStoragetime1();
 
             var datapoints = [
@@ -203,7 +197,7 @@
 									</div>
 									<div class="col-lg-6">
 										<ul id="DocumentViewerPaginationUL" class="nav navbar-nav navbar-left pagination" style="margin:0px">
-											<li style="background-color: #3265D7!important">
+											<li>
 												<a href="#" aria-label="Previous" style="background: #337ab7; color: whitesmoke;">
 													<span id="spnTotalPages" aria-hidden="true"></span>
 												</a>
@@ -221,20 +215,16 @@
 							</div>
 						</div>
 						<div class="col-lg-4">
-							<div class="row col-lg-12">
-								<!--Left Align-->
+							
+							<div class="row col-lg-14">
 
-
-							</div>
-							<div class="row col-lg-12">
-
-								<ul class="nav navbar-nav navbar-left pagination">
-									<li style="background-color: #3265D7!important">
-										<a href="#" aria-label="Previous">Last Session : <span id="Lastcountup">00:00:00</span>
+								<ul class="nav navbar-nav navbar-left pagination" style="margin-top:12px;">
+									<li>
+										<a href="#" aria-label="Previous" style="background-color: #337ab7; color: #fff;">Total Session On Document : <span id="Lastcountup">00:00:00</span>
 										</a>
 									</li>
-									<li style="background-color: #3265D7!important">
-										<a href="#" aria-label="Previous">Current Session :<span id="countup">00:00:00</span>
+									<li>
+										<a href="#" aria-label="Previous" style="background-color: #337ab7; color: #fff;">Current Session :<span id="countup">00:00:00</span>
 										</a>
 									</li>
 								</ul>
@@ -244,7 +234,7 @@
 							</div>
 						</div>
 
-						<%--<div id="DocumentViewerSummary">
+						<%--<div id="DocumentViewerSummary"> style="background-color: #3265D7!important"
 								Added <span id="DocumentViewerSummaryAdded" class="label label-primary">4</span> ,
                         Deleted <span id="DocumentViewerSummaryDeleted" class="label label-danger">2</span>
 							</div>--%>

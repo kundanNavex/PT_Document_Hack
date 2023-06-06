@@ -1,4 +1,5 @@
 ﻿using Aspose.Words;
+using Aspose.Words.Rendering;
 using Aspose.Words.Saving;
 using System;
 using System.Collections;
@@ -15,6 +16,11 @@ using System.Xml.Linq;
 
 namespace DocumentComparison
 {
+	public class DocumentSession {
+		public string docid;
+		public string sessionid;
+		public string sessiontime;
+	}
     public partial class Default : System.Web.UI.Page
     {
         public string CurrentFolder
@@ -35,7 +41,6 @@ namespace DocumentComparison
 		protected void Page_Load(object sender, EventArgs e)
         {
             Common.SetLicense();
-			Console.WriteLine("---");
             if (!IsPostBack)
             {
                 this.CurrentFolder = Common.DataDir;
@@ -98,8 +103,46 @@ namespace DocumentComparison
 		[WebMethod]
 		public static Array GetPageViewdData(string docid)
 		{
-
 			return GetAllPageViewd(docid).ToArray();
+		}
+
+		[WebMethod]
+		public static Array GetDocumentSessionData(string docId, string sessionTime)
+		{
+			return GetSessionData(docId, sessionTime).ToArray();
+		}
+
+		private static List<DocumentSession> GetSessionData(string docId, string sessionTime) {
+			List<DocumentSession> documentSeesions = new List<DocumentSession>();
+			conn = new SqlConnection(connstring);
+			conn.Open();
+			comm = new SqlCommand("insert into DocumentPageSession values(" + docId + ", '"+ sessionTime + "')", conn);
+			try
+			{
+				comm.ExecuteNonQuery();
+				comm = new SqlCommand("select * from DocumentPageSession where docid = " + docId, conn);
+				using (SqlDataReader reader = comm.ExecuteReader())
+				{
+					while (reader.Read())
+					{
+						string docid = Convert.ToString(reader["docid"]);
+						string sessionid = Convert.ToString(reader["sessionid"]);
+						string sessiontime = Convert.ToString(reader["sessiontime"]);
+						documentSeesions.Add(new DocumentSession() { docid = docid, sessionid = sessionid, sessiontime = sessiontime });
+					}
+				}
+			
+				//returnMess = "Saved...";
+			}
+			catch (Exception)
+			{
+				//returnMess = "Not Saved";
+			}
+			finally
+			{
+				conn.Close();
+			}
+			return documentSeesions;
 		}
 
 		public static string SavePageDatainDB(string docid, string pageNo)
