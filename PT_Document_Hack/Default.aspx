@@ -60,7 +60,8 @@
                         sumSeconds += seconds;
 					});
 					let time = new Date(sumSeconds * 1000).toISOString().substr(11, 8);
-                    span.text(time);
+					span.text(time);
+					localStorage.setItem('lastDocId', docid);
                 },
                 failure: function (data) {
                     alert('error');
@@ -161,7 +162,11 @@
 						sessionNum = data.d[0].sessionid + 1;
 					} else {
 						localStorage.setItem('timer1',  '00:00:01');
+					}
+					if (localStorage.getItem('lastDocId') != docid) {
+						localStorage.setItem('timer1', '00:00:01');
                     }
+
                     getlocalStoragetime(docid, sessionNum);
                     getlocalStoragetime1();
                     getDocumentSessions(docid);
