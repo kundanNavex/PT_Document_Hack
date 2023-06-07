@@ -33,7 +33,7 @@
 	</style>
 	<script src="https://cdn.canvasjs.com/canvasjs.min.js"></script>
 	<script>
-		function getlocalStoragetime(docid) {
+        function getlocalStoragetime(docid, sessionNum) {
 			var time = localStorage.getItem('timer1') || "00:00:00",
 				parts = time.split(':'),
 				hours = +parts[0],
@@ -45,10 +45,11 @@
 				return (num < 10) ? ("0" + num) : num;
 			}
 			var displayTime = correctNum(hours) + ":" + correctNum(minutes) + ":" + correctNum(seconds);
+			//let sessionId = localStorage.getItem('sessionId');
             docid != null && $.ajax({
                 type: "POST",
                 url: "Default.aspx/GetDocumentSessionData",
-                data: '{ docId: "' + docid + '", sessionTime: "' + displayTime +'" }',
+                data: '{ docId: "' + docid + '", sessionTime: "' + displayTime + '", sessionId: "' + sessionNum +'" }',
                 contentType: "application/json; charset=utf-8",
                 dataType: "json",
                 success: function (data) {
@@ -59,7 +60,7 @@
                         sumSeconds += seconds;
 					});
 					let time = new Date(sumSeconds * 1000).toISOString().substr(11, 8);
-                    span.text(time);					
+                    span.text(time);
                 },
                 failure: function (data) {
                     alert('error');
@@ -145,16 +146,38 @@
             });
             
            
+		}
+        function getLastSessionId(docid) {
+            $.ajax({
+                type: "POST",
+                url: "Default.aspx/GetDocumentSessions",
+                data: '{ docId: "' + docid + '"}',
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+				success: function (data) {
+					let sessionNum = 1;
+					if (data.d.length) {
+						data.d.sort((a, b) => b.sessionid - a.sessionid);
+						sessionNum = data.d[0].sessionid + 1;
+					} else {
+						localStorage.setItem('timer1',  '00:00:01');
+                    }
+                    getlocalStoragetime(docid, sessionNum);
+                    getlocalStoragetime1();
+                    getDocumentSessions(docid);
+                },
+                failure: function (data) {
+                    alert('error');
+                }
+            });
         }
 		window.onload = function () {
             const params = new Proxy(new URLSearchParams(window.location.search), {
                 get: (searchParams, prop) => searchParams.get(prop),
-            });
-
-            getlocalStoragetime(params.docid);
-			getlocalStoragetime1();
-
-            getDocumentSessions(params.docid);
+			});
+            getLastSessionId(params.docid);
+           
+            
             //var datapoints = [
             //    { y: 79.45, label: "Google" },
             //    { y: 7.31, label: "Bing" },

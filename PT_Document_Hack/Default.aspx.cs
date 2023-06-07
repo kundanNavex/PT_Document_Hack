@@ -18,7 +18,7 @@ namespace DocumentComparison
 {
 	public class DocumentSession {
 		public string docid;
-		public string sessionid;
+		public int sessionid;
 		public string sessiontime;
 	}
     public partial class Default : System.Web.UI.Page
@@ -107,9 +107,9 @@ namespace DocumentComparison
 		}
 
 		[WebMethod]
-		public static Array GetDocumentSessionData(string docId, string sessionTime)
+		public static Array GetDocumentSessionData(string docId, string sessionTime, string sessionId)
 		{
-			return GetSessionData(docId, sessionTime).ToArray();
+			return GetSessionData(docId, sessionTime, sessionId).ToArray();
 		}
 
         [WebMethod]
@@ -126,7 +126,7 @@ namespace DocumentComparison
                     while (reader.Read())
                     {
                         string docid = Convert.ToString(reader["docid"]);
-                        string sessionid = Convert.ToString(reader["sessionid"]);
+                        int sessionid = Convert.ToInt32(reader["sessionid"]);
                         string sessiontime = Convert.ToString(reader["sessiontime"]);
                         documentSeesions.Add(new DocumentSession() { docid = docid, sessionid = sessionid, sessiontime = sessiontime });
                     }
@@ -144,11 +144,11 @@ namespace DocumentComparison
         }
 
 
-        private static List<DocumentSession> GetSessionData(string docId, string sessionTime) {
+        private static List<DocumentSession> GetSessionData(string docId, string sessionTime, string sessionId) {
 			List<DocumentSession> documentSeesions = new List<DocumentSession>();
 			conn = new SqlConnection(connstring);
 			conn.Open();
-			comm = new SqlCommand("insert into DocumentPageSession values(" + docId + ", '"+ sessionTime + "')", conn);
+			comm = new SqlCommand("insert into DocumentPageSession values(" + docId + ", '"+ sessionTime + "', '"+ Convert.ToInt32(sessionId) + "')", conn);
 			try
 			{
 				comm.ExecuteNonQuery();
@@ -158,7 +158,7 @@ namespace DocumentComparison
 					while (reader.Read())
 					{
 						string docid = Convert.ToString(reader["docid"]);
-						string sessionid = Convert.ToString(reader["sessionid"]);
+						int sessionid = Convert.ToInt32(reader["sessionid"]);
 						string sessiontime = Convert.ToString(reader["sessiontime"]);
 						documentSeesions.Add(new DocumentSession() { docid = docid, sessionid = sessionid, sessiontime = sessiontime });
 					}
